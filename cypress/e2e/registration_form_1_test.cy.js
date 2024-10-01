@@ -1,10 +1,14 @@
 // Before each test (it...) open .html page
 beforeEach(() => {
-    //cy.viewport(1920, 1080) //OM ADDED NEW VIEWPORT SIZE, scrollable error
     cy.visit('cypress/fixtures/registration_form_1.html')
-    //cy.viewport(2560, 1440) //OM ADDED NEW VIEWPORT SIZE, scrollable error
-    //cy.viewport(1920, 1080) //OM ADDED NEW VIEWPORT SIZE, scrollable error
+    //cy.viewport(2560, 1440) //OM ADDED NEW VIEWPORT SIZE, scrollable error //OM
 })
+
+// FAKER 
+import { faker } from '@faker-js/faker'; // OM ADDED FAKER (also installed)
+const RandomFirstName = faker.person.firstName();  //OM random first name from faker
+const RandomLastName = faker.person.lastName();    //OM random last name from faker
+
 
 /*
 Assignment 2:
@@ -15,16 +19,20 @@ Assignment 2:
  4. Change the order of steps in the first test:
       -first set phone number
       -then 2 password fields
-      -then username
+      -then usernamen
  5. Add comment to the first test containing today’s date
  */
 
-describe('This is first test suite', () => {
+
+describe('This is first test suite, Olavi Must', () => {                                
     it('User can submit data only when valid mandatory values are added', () => {
-        cy.get('#username').type('Something')
-        cy.get('[data-testid="phoneNumberTestId"]').type('5656565656')
-        cy.get('input[name="password"]').type('Password123')
-        cy.get('[name="confirm"]').type('Password123')
+        /* 29.09.2024 (If above is basically heading, then this is the first row of test itself. Multiline comment on purpose */
+        cy.get('[data-testid="phoneNumberTestId"]').type('555666777')                   
+        cy.get('#firstName').type(RandomFirstName)                   
+        cy.get('#lastName').type(RandomLastName)                   
+        cy.get('input[name="password"]').type('Replacepassword123')                     
+        cy.get('[name="confirm"]').type('Replacepassword123')                           
+        cy.get('#username').type('Something')                                           
 
         //in order to activate submit button, user has to click somewhere outside the input field
         cy.get('h2').contains('Password').click()
@@ -48,7 +56,7 @@ describe('This is first test suite', () => {
         cy.get('[data-testid="phoneNumberTestId"]').type('10203040')
         cy.get('input[name="password"]').type('Password123')
         cy.get('[name="confirm"]').type('Password123123')
-        
+
         // type('{enter}') is clicking native enter button from thekeyboard
         // for example, to click backspace use '{backspace}'
         cy.get('[name="confirm"]').type('{enter}')
@@ -99,19 +107,72 @@ describe('This is first test suite', () => {
     Assignment 3: add the content to the following tests
     */
 
-    it('User cannot submit data when phone number is absent', () => {
+    it('User cannot submit data when phone number is absent', () => {                       //29.09.2024 OM ADDED. Assignment 3 step 3
         // Add test, similar to previous one with phone number field not filled in
         // All other fields should be entered correctly
         // Assert that submit button is not enabled and that successful message is not visible
+        cy.get('#username').type('johnDoe')
+
+        cy.get('#firstName').type(RandomFirstName)                   //OM
+        cy.get('#lastName').type(RandomLastName)                   //OM
+
+        cy.get('[data-testid="phoneNumberTestId"]').type('10203040')
+        cy.get("input[name='password']").type('Password123')
+        cy.get('[name="confirm"]').type('Password123')
+
+        // Scroll back to phone number input field
+        cy.get('#phoneNumber').scrollIntoView()
+        cy.get('#phoneNumber').clear()
+        cy.get('h2').contains('Password').click()
+
+        // Asserting that Submit button is disabled
+        cy.get('.submit_button').should('be.disabled')
+
+        // Assert that success message is not visible
+        cy.get('#success_message').should('not.be.visible')
+
+        // Assert that correct error message is visible and contain given text
+            //cy.get('#input_error_message').should('be.visible').should('contain', 'Mandatory input field is not valid or empty!')  //OM commented out as said in discussionboard ->> error This element <p#input_error_message.error_message> is not visible because it has CSS property: display: none
+
+        // Assert that phone number has tooltip with error message
+            // cy.get('#phoneNumber').should('have.attr', 'title').should('contain', 'Input field') //OM commented out as said in discussionboard ->> error
+
+        // There are 2 options how to check error message visibility: using CSS or simply be.visible
+        // none = not visible; block = visible
+            //cy.get('#input_error_message').should('be.visible')   //OM commented out as said in discussionboard ->> error
+            //cy.get('#input_error_message').should('have.css', 'display', 'block') //OM commented out as said in discussionboard ->> error
+
+
     })
 
-    it('User cannot submit data when password and/or confirmation password is absent', () => {
+    it('User cannot submit data when password and/or confirmation password is absent', () => { //30.09.2024 OM ADDED. Assignment 3 step 4
         // Add test, similar to previous one with password field not filled in
         // All other fields should be entered correctly
         // Assert that submit button is not enabled and that successful message is not visible
+        cy.get('#username').type('johnDoe')
+
+        cy.get('#firstName').type(RandomFirstName)                   //OM
+        cy.get('#lastName').type(RandomLastName)                   //OM
+
+        cy.get('[data-testid="phoneNumberTestId"]').type('10203040')
+        cy.get("input[name='password']").type('Password123')
+        //cy.get('[name="confirm"]').type('Password123')        // Assignment 3 step 4d (remove step filling for either 1 password field )-commented out
+
+        //in order to activate submit button, user has to click somewhere outside the input field
+        cy.get('h2').contains('Password').click()
+
+        // Asserting that Submit button is disabled
+        cy.get('.submit_button').should('be.disabled')
+
+        // Assert that success message is not visible
+        cy.get('#success_message').should('not.be.visible')
+
+
+
+
     })
 
-    it('User cannot add letters to phone number', () => {
+    it('User cannot add letters to phone number', () => {               //30.09.2024 OM ADDED. Assignment 3 step 5
         // Next verification is given as example
         // how we can check from html code, that phone number should contain only numbers
         cy.get('[data-testid="phoneNumberTestId"]').should('have.attr', 'type', 'number')
@@ -119,5 +180,26 @@ describe('This is first test suite', () => {
         // Add steps, when all fields are correctly filled in, except phone number
         // Try typing letters to phone number field
         // Assert that submit button is not enabled and that successful message is not visible
+
+        cy.get('#username').type('johnDoe')
+
+        cy.get('#firstName').type(RandomFirstName)                   //OM
+        cy.get('#lastName').type(RandomLastName)                   //OM
+
+        cy.get('[data-testid="phoneNumberTestId"]').type('Cerebrum Hub')    //OM "Saa1x5a2" enters only numbers 152. Instead, it could show error // html lets to type in letter e and marks field with red frame. Other letters it does not allow to enter
+        cy.get("input[name='password']").type('Password123')
+        cy.get('[name="confirm"]').type('Password123') 
+
+        //in order to activate submit button, user has to click somewhere outside the input field
+        cy.get('h2').contains('Password').click()
+
+        // Asserting that Submit button is disabled
+        cy.get('.submit_button').should('be.disabled')
+
+        // Assert that success message is not visible
+        cy.get('#success_message').should('not.be.visible')
+
+
+
     })
 })
