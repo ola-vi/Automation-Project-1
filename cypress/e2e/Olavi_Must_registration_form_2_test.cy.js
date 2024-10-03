@@ -2,20 +2,17 @@ beforeEach(() => {
     cy.visit('cypress/fixtures/registration_form_2.html')
 })
 
-/*
-Assignement 4: add content to the following tests
-*/
+//Assignement 4: add content to the following tests
 
 // FAKER added to be used in OM tests
-import { faker } from '@faker-js/faker';
-
+import { faker } from '@faker-js/faker'
 
 describe('Section 1: Functional tests', () => {
 
 
     // 4.1
     it('User can use only same both first and validation passwords', () => {
-        
+
         // Add test steps for filling in only mandatory fields
         // Type confirmation password which is different from first password
         // Assert that submit button is not enabled
@@ -25,7 +22,7 @@ describe('Section 1: Functional tests', () => {
         // Add assertion, that error message is not visible anymore
         // Add assertion, that submit button is now enabled
 
-        // Filling in all mandatory fields with walid data using function (Username, e-mail, first name, last name and phone number)
+        // Filling in all mandatory fields with vlid data using function. Filled in fields: username, e-mail, first name, last name and phone number + validity check
         inputMandatoryData()
 
         // Filling in password and confirmation password that do not match (function for matching passwords + changing confirmation password)
@@ -33,28 +30,19 @@ describe('Section 1: Functional tests', () => {
         cy.get('[name="confirm"]').clear().type('ElmStreet1')
         cy.get('h2').contains('Password').click()
 
-        // Asserting that Submit button is disabled
+        // Asserting: Submit button is disabled, success message is NOT visible, password error message is visible
         cy.get('.submit_button').should('be.disabled')
-
-        // Asserting that success message is not visible
         cy.get('#success_message').should('not.be.visible')
-
-        // Asserting that password error message is visible
         cy.get('#password_error_message').should('be.visible')
 
         // Setting passwords to match
         inputMatchingPasswords()
         cy.get('h2').contains('Password').click()
 
-        // Asserting that password error message is not visible
-        cy.get('#password_error_message').should('not.be.visible')  //No message shown on page but it can be tested
-
-        // Asserting that Submit button is not disabled
+        // Asserting that password error message is NOT visible and submit button is NOT disabled
+        cy.get('#password_error_message').should('not.be.visible')
         cy.get('.submit_button').should('not.be.disabled')
     })
-
-
-
 
     // 4.2
     it('User can submit form with all fields added', () => {
@@ -68,7 +56,7 @@ describe('Section 1: Functional tests', () => {
         inputMandatoryData()
 
         // Filling in all optional "fields" with vlid data (Favourite web language, favourite transport, car, favourite animal)
-        //write more advanced code to count items later
+        //MEMO for OM -->> write more advanced code to count items later
         cy.get('input[type="radio"]').eq(2).check()         //0-3
         cy.get('input[type="checkbox"]').eq(2).check()      //0-2
         cy.get('#cars').select(3)                           //0-3
@@ -81,14 +69,10 @@ describe('Section 1: Functional tests', () => {
         // Asserting that Submit button is not disabled
         cy.get('.submit_button').should('not.be.disabled')
 
-        // Submitting data
+        // Submitting data & asserting that sucess message is visible
         cy.get('.submit_button').click()
-
-        // Asserting that sucess message is visible
         cy.get('#success_message').should('be.visible')
-
     })
-
 
 
     it('User can submit form with valid data and only mandatory fields added', () => {
@@ -107,18 +91,13 @@ describe('Section 1: Functional tests', () => {
         inputMatchingPasswords()
         cy.get('h2').contains('Password').click()
 
-        // Asserting that Submit button is not disabled
+        // Asserting that Submit button is NOT disabled
         cy.get('.submit_button').should('not.be.disabled')
 
-        // Submitting data
+        // Submitting data & asserting that sucess message is visible. 
         cy.get('.submit_button').click()
-
-        // Asserting that sucess message is visible
         cy.get('#success_message').should('be.visible')
-
-        // Scroll to bottom of the page
         cy.window().scrollTo('bottom')
-
     })
 
     // Add at least 1 test for checking some mandatory field's absence 4.4
@@ -326,7 +305,7 @@ describe('Section 2: Visual tests', () => {
             cy.get('#animal').find('option').eq(index).should('have.text', animal)
         })
 
-      
+
         // OM - more advanced way, how to check the content of the animals dropdown
         cy.get('#animal').find('option').then(options => {
             const actual = [...options].map(option => option.value)
@@ -363,20 +342,46 @@ function inputValidData(username) {
     cy.get('h2').contains('Password').click()
 }
 
-// OM function to fill in valid mandatory data except password
+
+// OM advanced function to fill in valid mandatory data except password
 function inputMandatoryData() {
-    const RandomFirstName = faker.person.firstName()
-    const RandomLastName = faker.person.lastName()
+
+    let RandomFirstName
+    do {
+        RandomFirstName = faker.person.firstName()
+    } while (!/^[A-Za-z]+$/.test(RandomFirstName)) // Repeat if the name contains non-letter characters
+    cy.log('Generated First Name: ' + RandomFirstName)  // Logs only a valid name containing letters
+
+    let RandomLastName
+    do {
+        RandomLastName = faker.person.lastName()
+    } while (!/^[A-Za-z]+$/.test(RandomLastName)) // Repeat if the name contains non-letter characters
+    cy.log('Generated Last Name: ' + RandomLastName)  // Logs only a valid name containing letters
+
+
     cy.log('Username, e-mail, first name, last name and phone number will be filled')
     cy.get('#username').type('JonnIpunn')
-    cy.get('#email').type('jonnipunn@om.com')       //must have small letters so faker wont work here
+    cy.get('#email').type('jonnipunn@om.com')       //must have small letters
     cy.get('input[title="Add first name"]').type(RandomFirstName)
     cy.get('#lastName').type(RandomLastName)
     cy.get('[data-testid="phoneNumberTestId"]').type('54541010')
 
     // Asserting that input error message is not visible after inserting data above
     cy.get('#input_error_message').should('not.be.visible')
+
+    // Asserting validity of mandatory input fields
+    const inputSelectors = ['#username', '#email', 'input[title="Add first name"]', '#lastName', '[data-testid="phoneNumberTestId"]']  // Mixed selectors
+    cy.log('ASSERTING VALIDITY OF MANDATORY INPUT FIELDS')
+    cy.wrap(inputSelectors).each((selector) => {
+        cy.get(selector)
+            .then(($input) => {
+                expect($input[0].validity.valid).to.equal(true);  // Check if each input is valid
+            })
+    })
+
 }
+
+
 
 // OM function to fill in matching passwords
 function inputMatchingPasswords() {
@@ -386,7 +391,7 @@ function inputMatchingPasswords() {
 }
 
 
-//OM function to fill in optional data (TO BE ADDED)
+//OM function to fill in optional data (TO BE ADDED IF NEEDED)
 function inputOptionalData() {
     const RandomFirstName = faker.person.firstName()
     const RandomLastName = faker.person.lastName()
