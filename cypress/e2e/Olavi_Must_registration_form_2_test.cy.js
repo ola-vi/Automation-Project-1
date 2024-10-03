@@ -6,19 +6,16 @@ beforeEach(() => {
 Assignement 4: add content to the following tests
 */
 
-// FAKER added by OM for tests
+// FAKER added to be used in OM tests
 import { faker } from '@faker-js/faker';
-//const RandomUserName = faker.internet.userName()
-//const RandomEmail = faker.internet.email({ provider: 'om.chub.com' })
-//const RandomFirstName = faker.person.firstName()
-//const RandomLastName = faker.person.lastName()
-
 
 
 describe('Section 1: Functional tests', () => {
 
+
+    // 4.1
     it('User can use only same both first and validation passwords', () => {
-        // 4.1
+        
         // Add test steps for filling in only mandatory fields
         // Type confirmation password which is different from first password
         // Assert that submit button is not enabled
@@ -126,7 +123,7 @@ describe('Section 1: Functional tests', () => {
 
     // Add at least 1 test for checking some mandatory field's absence 4.4
 
-    it.only('User can NOT submit form if 1 of mandatory fields are not filled', () => {
+    it('User can NOT submit form if 1 of mandatory fields are not filled', () => {
         // Add test steps for filling in ONLY mandatory fields
         // Assert that submit button is enabled
         // Assert that after submitting the form system shows successful message
@@ -163,6 +160,7 @@ Assignement 5: create more visual tests
 */
 
 describe('Section 2: Visual tests', () => {
+    // SAMPLE
     it('Check that logo is correct and has correct size', () => {
         cy.log('Will check logo source and size')
         cy.get('img').should('have.attr', 'src').should('include', 'cerebrum_hub_logo')
@@ -172,11 +170,37 @@ describe('Section 2: Visual tests', () => {
             .and('be.greaterThan', 100)
     })
 
+    // OM TEST 5.1 - OK
     it('My test for second picture', () => {
-        // Create similar test for checking the second picture
-    });
 
-    it('Check navigation part', () => {
+        // Verify image is visible and with correct attributes
+        cy.get('img[data-cy="cypress_logo"]')
+            .should('be.visible')
+            .should('have.attr', 'src')
+            .should('include', 'cypress_logo.png')
+
+        // Use the jQuery wrapped element to access its width and height properties and assert values
+        cy.get('img[data-cy="cypress_logo"]')
+            .then($img => {
+
+                // Assert the exact width
+                expect($img.width()).to.equal(116); // Assert the width
+
+                // Assert the width is within the specified range
+                expect($img.width()).to.be.greaterThan(100); // Assert width is greater than 100
+                expect($img.width()).to.be.lessThan(120); // Assert width is less than 120
+
+                // Assert the exact height
+                expect($img.height()).to.equal(88); // Assert the height
+
+                // Assert the height is within the specified range
+                expect($img.height()).to.be.greaterThan(70); // Assert height is greater than 70
+                expect($img.height()).to.be.lessThan(100); // Assert height is less than 100
+            })
+
+    })
+
+    it('Check navigation part - link 1 (SAMPLE)', () => {
         cy.get('nav').children().should('have.length', 2)
 
         // Get navigation element, find siblings that contains h1 and check if it has Registration form in string
@@ -197,6 +221,28 @@ describe('Section 2: Visual tests', () => {
 
     // Create similar test for checking the second link 
 
+    // OM TEST 5.2
+    it('Check navigation part - link 2', () => {
+        cy.get('nav').children().should('have.length', 2)
+
+        // Get navigation element, find siblings that contains h1 and check if it has Registration form in string
+        cy.get('nav').siblings('h1').should('have.text', 'Registration form number 2')
+
+        // Get navigation element, find its first child, check the link content and click it
+        cy.get('nav').children().eq(1).should('be.visible')
+            .and('have.attr', 'href', 'registration_form_3.html')
+            .click()
+
+        // Check that currently opened URL is correct
+        cy.url().should('contain', '/registration_form_3.html')
+
+        // Go back to previous page
+        cy.go('back')
+        cy.log('Back again in registration form 2')
+    })
+
+
+    // SAMPLE
     it('Check that radio button list is correct', () => {
         // Array of found elements with given selector has 4 elements in total
         cy.get('input[type="radio"]').should('have.length', 4)
@@ -221,6 +267,30 @@ describe('Section 2: Visual tests', () => {
 
     // Create test similar to previous one verifying check boxes
 
+    // OM TEST 5.3
+    it('Check that checkbox list is correct', () => {
+        // Array of found elements with given selector has 3 elements in total
+        cy.get('input[type="checkbox"]').should('have.length', 3)
+
+        // Verify labels of the checkboxes
+        cy.get('input[type="checkbox"]').next().eq(0).should('have.text', 'I have a bike')
+        cy.get('input[type="checkbox"]').next().eq(1).should('have.text', 'I have a car')
+        cy.get('input[type="checkbox"]').next().eq(2).should('have.text', 'I have a boat')
+
+
+        //Verify default state of checkboxes
+        cy.get('input[type="checkbox"]').eq(0).should('not.be.checked')
+        cy.get('input[type="checkbox"]').eq(1).should('not.be.checked')
+        cy.get('input[type="checkbox"]').eq(2).should('not.be.checked')
+
+        // Selecting one will not remove selection from the other checkbox
+        cy.get('input[type="checkbox"]').eq(0).check().should('be.checked')
+        cy.get('input[type="checkbox"]').eq(1).check().should('be.checked')
+        cy.get('input[type="checkbox"]').eq(0).should('be.checked')
+    })
+
+
+    // SAMPLE
     it('Car dropdown is correct', () => {
         // Here is just an example how to explicitely create screenshot from the code
         // Select second element and create screenshot for this area or full page
@@ -243,6 +313,39 @@ describe('Section 2: Visual tests', () => {
     })
 
     // Create test similar to previous one
+
+    // OM TEST 5.4
+    it('Animals dropdown is correct', () => {
+
+        //Assert the length of array of elements in Animals dropdown
+        cy.get('#animal').find('option').should('have.length', 6)
+
+
+        const animalsText = ['Dog', 'Cat', 'Snake', 'Hippo', 'Cow', 'Horse'];   //NB! For text "Horse" there is actual option value "mouse"!
+        animalsText.forEach((animal, index) => {
+            cy.get('#animal').find('option').eq(index).should('have.text', animal)
+        })
+
+      
+        // OM - more advanced way, how to check the content of the animals dropdown
+        cy.get('#animal').find('option').then(options => {
+            const actual = [...options].map(option => option.value)
+            const expectedAnimals = ['dog', 'cat', 'snake', 'hippo', 'cow', 'mouse']    // NB! Mouse value = horse text!
+
+            // Loop through expected values, assert and make screenshots
+            expectedAnimals.forEach((expectedAnimals, index) => {
+                cy.get('#animal').select(index).screenshot(`checking_value_${expectedAnimals}`, 'animal drop-down')
+                expect(actual[index]).to.eq(expectedAnimals) // Check each value
+            });
+
+            // Final screenshot after all checks
+            cy.screenshot('final_check_complete')
+            cy.log('Please go to see also images in Cypress folder "Screenshots!"')
+        })
+
+    })
+
+
 
 })
 
@@ -283,7 +386,7 @@ function inputMatchingPasswords() {
 }
 
 
-//OM function to fill in optional data
+//OM function to fill in optional data (TO BE ADDED)
 function inputOptionalData() {
     const RandomFirstName = faker.person.firstName()
     const RandomLastName = faker.person.lastName()
