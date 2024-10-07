@@ -1,42 +1,47 @@
+let soft_test_Attribute         //string
+let soft_test_exp_Conditions   //array of strings
+
+
 // THIS IS SOFT ASSERT WITH POPUP ERROR MESSAGE SO TEST WONT STOP (is marked as "PASSED" though)
 Cypress.Commands.add('softAssert', (selector, callback) => {
     cy.get(selector).then(($el) => {
-      try {
-        // Run the assertion function
-        callback($el)
-      } catch (err) {
-        // Get the current test's name (the 'it' block title)
-        const testName = Cypress.currentTest.title
-  
-        // Automatically describe what was being tested
-        const testedAttribute = 'placeholder'
-        const expectedConditions = [
-          'should exist',
-          'should not be empty'
-        ].join(' and ')  // Combine multiple conditions for the error message
-  
-        // Display a pop-up on the screen with the error message
-        cy.document().then((doc) => {
-          const popup = doc.createElement('div')
-          popup.setAttribute('id', 'popup-message')
-          popup.setAttribute('style', 'position: fixed; top: 20px; left: 20px; background-color: red; color: white; padding: 20px; z-index: 9999;')
-  
-          // Custom error message with dynamically generated text
-          popup.innerText = `Error in test: "${testName}"\nSelector: ${selector}\nTested: ${testedAttribute}\nExpected: ${expectedConditions}\nDetails: ${err.message}`
-          doc.body.appendChild(popup)
-  
-        // Wait for 10 seconds before removing the pop-up
-        cy.wait(10000).then(() => {
-            // Remove the pop-up after the wait
-            doc.getElementById('popup-message').remove()
-          })
-        })
-  
-        // Log the error in the Cypress logs as well
-        cy.log(`Test: "${testName}" | Assertion error for selector ${selector}: ${err.message}`)
-      }
+        try {
+            // Run the assertion function
+            callback($el)
+        } catch (err) {
+            // Get the current test's name (the 'it' block title)
+            const testName = Cypress.currentTest.title
+
+            // Automatically describe what was being tested
+            const testedAttribute = soft_test_Attribute 
+            const expectedConditions = soft_test_exp_Conditions.join(' and ')  // Combine multiple conditions for the error message
+            /*      const expectedConditions = [
+                    'should exist',
+                    'should not be empty'
+                  ].join(' and ')  // Combine multiple conditions for the error message   */
+
+            // Display a pop-up on the screen with the error message
+            cy.document().then((doc) => {
+                const popup = doc.createElement('div')
+                popup.setAttribute('id', 'popup-message')
+                popup.setAttribute('style', 'position: fixed; top: 20px; left: 20px; background-color: red; color: white; padding: 20px; z-index: 9999;')
+
+                // Custom error message with dynamically generated text
+                popup.innerText = `Error in test: "${testName}"\nSelector: ${selector}\nTested: ${testedAttribute}\nExpected: ${expectedConditions}\nDetails: ${err.message}`
+                doc.body.appendChild(popup)
+
+                // Wait for 10 seconds before removing the pop-up
+                cy.wait(10000).then(() => {
+                    // Remove the pop-up after the wait
+                    doc.getElementById('popup-message').remove()
+                })
+            })
+
+            // Log the error in the Cypress logs as well
+            cy.log(`Test: "${testName}" | Assertion error for selector ${selector}: ${err.message}`)
+        }
     })
-  })
+})
 
 
 
@@ -179,7 +184,7 @@ describe('Section 1: Visual tests', () => {
         cy.url().should('contain', '/cookiePolicy.html')
         cy.screenshot('P4_R3_Cookie_Policy_Page')
         cy.go('back')
-        cy.log('Back again in registration form 3')      
+        cy.log('Back again in registration form 3')
     })
 
     // 1.8
@@ -191,12 +196,17 @@ describe('Section 1: Visual tests', () => {
         cy.get('span').contains('Invalid email address.').should('not.be.visible')
         //cy.get('input[name="email"]').should('have.attr', 'placeholder').and('not.be.empty')    // In code there is no placeholder so it fails and ruins other tests. Should have placeholder as name field have it.
 
-        cy.log('EXPECT EMAIL TO HAVE PLACEHOLDER')
+        
         // Using CUSTOM "soft assert" to check for the placeholder attribute. If failing, error displayed in log, but test continues and is marked as passed.
+        soft_test_Attribute = 'Placeholder'                                 // DEFINE TESTED ATTRIBUTE FOR SOFT ASSERT ERROR MESSAGE
+        soft_test_exp_Conditions = ['should exist','should not be empty']   // DEFINE TESTED CONDITIONS FOR SOFT ASSERT ERROR MESSAGE
+
+        cy.log('EXPECT EMAIL TO HAVE PLACEHOLDER')
         cy.softAssert('input[name="email"]', (el) => {
             const placeholder = el.attr('placeholder')
             expect(placeholder).to.exist                // Check that the placeholder exists
             expect(placeholder).to.not.be.empty         // Check that the placeholder is not an empty string
+
         })
 
         //Verify there are no error messages displayed when valid email entered
@@ -240,7 +250,7 @@ describe('Section 2: Functional tests', () => {
 
     //2.2
     it('User can submit form with all data filled/selected (File not added) ', () => {
- 
+
         fillAll({ username: 'Tester Olavi', email: 'testemail1@om.com' })                           // uses function to fill in all fields 
 
         CheckForm()   // verify form validity
@@ -275,13 +285,13 @@ describe('Section 2: Functional tests', () => {
         //Verify that button is enabled and click to submit
         cy.get('button[type="submit"]').should('not.be.disabled').click()
 
-         // Check that currently opened URL is correct
-         cy.url().should('contain', '/upload_file.html')
+        // Check that currently opened URL is correct
+        cy.url().should('contain', '/upload_file.html')
 
-         // Go back to previous page
-         cy.go('back')
-         cy.url().should('contain', '/registration_form_3.html')
-         cy.log('Back again in registration form 3')
+        // Go back to previous page
+        cy.go('back')
+        cy.url().should('contain', '/registration_form_3.html')
+        cy.log('Back again in registration form 3')
     })
 
 })
