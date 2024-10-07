@@ -13,15 +13,6 @@ describe('Section 1: Functional tests', () => {
     // 4.1
     it('User can use only same both first and validation passwords', () => {
 
-        // Add test steps for filling in only mandatory fields
-        // Type confirmation password which is different from first password
-        // Assert that submit button is not enabled
-        // Assert that successful message is not visible
-        // Assert that error message is visible 
-        // Change the test, so the passwords would match
-        // Add assertion, that error message is not visible anymore
-        // Add assertion, that submit button is now enabled
-
         // Filling in all mandatory fields with vlid data using function. Filled in fields: username, e-mail, first name, last name and phone number + validity check
         inputMandatoryData()
 
@@ -46,11 +37,8 @@ describe('Section 1: Functional tests', () => {
 
     // 4.2
     it('User can submit form with all fields added', () => {
-        // Add test steps for filling in ALL fields                 
-        // Assert that submit button is enabled
-        // Assert that after submitting the form system show successful message
-
-        //OM. Not sure if radio buttons and chsckboxes also needed to be filled/marked!? On web page those are marked as "Not mandatory field" that basically means they belong to "All fields".
+        
+        //OM. Not sure if radio buttons and checkboxes also needed to be filled/marked!? On web page those are marked as "Not mandatory field" that basically means they belong to "All fields".
 
         // Filling in all mandatory fields with walid data using function (Username, e-mail, first name, last name and phone number)
         inputMandatoryData()
@@ -63,7 +51,7 @@ describe('Section 1: Functional tests', () => {
         cy.get('#animal').select(3)                         //0-5
 
         // Filling in password and matching password confirmation
-        inputMatchingPasswords()
+        inputMatchingPasswords()    //FUNCTION for inserting matching passwords
         cy.get('h2').contains('Password').click()
 
         // Asserting that Submit button is not disabled
@@ -74,16 +62,9 @@ describe('Section 1: Functional tests', () => {
         cy.get('#success_message').should('be.visible')
     })
 
-
+    // 4.3
     it('User can submit form with valid data and only mandatory fields added', () => {
-        // Add test steps for filling in ONLY mandatory fields
-        // Assert that submit button is enabled
-        // Assert that after submitting the form system shows successful message
-
-        // example, how to use function, which fills in all mandatory data
-        // in order to see the content of the function, scroll to the end of the file
-        // SAMPLE FUNCTION inputValidData('johnDoe')
-
+        
         // Filling in all mandatory fields with walid data using function (Username, e-mail, first name, last name and phone number)
         inputMandatoryData()
 
@@ -100,17 +81,9 @@ describe('Section 1: Functional tests', () => {
         cy.window().scrollTo('bottom')
     })
 
-    // Add at least 1 test for checking some mandatory field's absence 4.4
-
+    // 4.4
     it('User can NOT submit form if 1 of mandatory fields are not filled', () => {
-        // Add test steps for filling in ONLY mandatory fields
-        // Assert that submit button is enabled
-        // Assert that after submitting the form system shows successful message
-
-        // example, how to use function, which fills in all mandatory data
-        // in order to see the content of the function, scroll to the end of the file
-        // SAMPLE FUNCTION inputValidData('johnDoe')
-
+       
         // Filling in all mandatory fields with walid data using function (Username, e-mail, first name, last name and phone number)
         inputMandatoryData()
 
@@ -124,11 +97,9 @@ describe('Section 1: Functional tests', () => {
         // Asserting that Submit button is disabled
         cy.get('.submit_button').should('be.disabled')
 
-
         // Scroll to bottom of the page
         cy.window().scrollTo('bottom')
     })
-
 
 
 })
@@ -139,8 +110,9 @@ Assignement 5: create more visual tests
 */
 
 describe('Section 2: Visual tests', () => {
+
     // SAMPLE
-    it('Check that logo is correct and has correct size', () => {
+    it('Check that logo is correct and has correct size (SAMPLE)', () => {
         cy.log('Will check logo source and size')
         cy.get('img').should('have.attr', 'src').should('include', 'cerebrum_hub_logo')
         // get element and check its parameter height
@@ -149,7 +121,7 @@ describe('Section 2: Visual tests', () => {
             .and('be.greaterThan', 100)
     })
 
-    // OM TEST 5.1 - OK
+    //5.1 -  OM TEST 
     it('My test for second picture', () => {
 
         // Verify image is visible and with correct attributes
@@ -163,22 +135,23 @@ describe('Section 2: Visual tests', () => {
             .then($img => {
 
                 // Assert the exact width
-                expect($img.width()).to.equal(116); // Assert the width
+                expect($img.width()).to.equal(116) // Assert the width
 
                 // Assert the width is within the specified range
-                expect($img.width()).to.be.greaterThan(100); // Assert width is greater than 100
-                expect($img.width()).to.be.lessThan(120); // Assert width is less than 120
+                expect($img.width()).to.be.greaterThan(100) // Assert width is greater than 100
+                expect($img.width()).to.be.lessThan(120) // Assert width is less than 120
 
                 // Assert the exact height
-                expect($img.height()).to.equal(88); // Assert the height
+                expect($img.height()).to.equal(88) // Assert the height
 
                 // Assert the height is within the specified range
-                expect($img.height()).to.be.greaterThan(70); // Assert height is greater than 70
-                expect($img.height()).to.be.lessThan(100); // Assert height is less than 100
+                expect($img.height()).to.be.greaterThan(70) // Assert height is greater than 70
+                expect($img.height()).to.be.lessThan(100) // Assert height is less than 100
             })
 
     })
 
+    //5.2 - SAMPLE 
     it('Check navigation part - link 1 (SAMPLE)', () => {
         cy.get('nav').children().should('have.length', 2)
 
@@ -200,7 +173,7 @@ describe('Section 2: Visual tests', () => {
 
     // Create similar test for checking the second link 
 
-    // OM TEST 5.2
+    // 5.3 - OM TEST
     it('Check navigation part - link 2', () => {
         cy.get('nav').children().should('have.length', 2)
 
@@ -221,8 +194,8 @@ describe('Section 2: Visual tests', () => {
     })
 
 
-    // SAMPLE
-    it('Check that radio button list is correct', () => {
+    // 5.4 - SAMPLE
+    it('Check that radio button list is correct (SAMPLE)', () => {
         // Array of found elements with given selector has 4 elements in total
         cy.get('input[type="radio"]').should('have.length', 4)
 
@@ -246,7 +219,7 @@ describe('Section 2: Visual tests', () => {
 
     // Create test similar to previous one verifying check boxes
 
-    // OM TEST 5.3
+    // 5.5 - OM TEST
     it('Check that checkbox list is correct', () => {
         // Array of found elements with given selector has 3 elements in total
         cy.get('input[type="checkbox"]').should('have.length', 3)
@@ -255,7 +228,6 @@ describe('Section 2: Visual tests', () => {
         cy.get('input[type="checkbox"]').next().eq(0).should('have.text', 'I have a bike')
         cy.get('input[type="checkbox"]').next().eq(1).should('have.text', 'I have a car')
         cy.get('input[type="checkbox"]').next().eq(2).should('have.text', 'I have a boat')
-
 
         //Verify default state of checkboxes
         cy.get('input[type="checkbox"]').eq(0).should('not.be.checked')
@@ -269,8 +241,8 @@ describe('Section 2: Visual tests', () => {
     })
 
 
-    // SAMPLE
-    it('Car dropdown is correct', () => {
+    // 5.6 - SAMPLE
+    it('Car dropdown is correct (SAMPLE)', () => {
         // Here is just an example how to explicitely create screenshot from the code
         // Select second element and create screenshot for this area or full page
         cy.get('#cars').select(1).screenshot('Cars drop-down')
@@ -293,14 +265,14 @@ describe('Section 2: Visual tests', () => {
 
     // Create test similar to previous one
 
-    // OM TEST 5.4
+    // 5.7 OM TEST
     it('Animals dropdown is correct', () => {
 
         //Assert the length of array of elements in Animals dropdown
         cy.get('#animal').find('option').should('have.length', 6)
 
 
-        const animalsText = ['Dog', 'Cat', 'Snake', 'Hippo', 'Cow', 'Horse'];   //NB! For text "Horse" there is actual option value "mouse"!
+        const animalsText = ['Dog', 'Cat', 'Snake', 'Hippo', 'Cow', 'Horse']   //NB! For text "Horse" there is actual option value "mouse"!
         animalsText.forEach((animal, index) => {
             cy.get('#animal').find('option').eq(index).should('have.text', animal)
         })
@@ -315,7 +287,7 @@ describe('Section 2: Visual tests', () => {
             expectedAnimals.forEach((expectedAnimals, index) => {
                 cy.get('#animal').select(index).screenshot(`checking_value_${expectedAnimals}`, 'animal drop-down')
                 expect(actual[index]).to.eq(expectedAnimals) // Check each value
-            });
+            })
 
             // Final screenshot after all checks
             cy.screenshot('final_check_complete')
@@ -375,7 +347,7 @@ function inputMandatoryData() {
     cy.wrap(inputSelectors).each((selector) => {
         cy.get(selector)
             .then(($input) => {
-                expect($input[0].validity.valid).to.equal(true);  // Check if each input is valid
+                expect($input[0].validity.valid).to.equal(true)  // Check if each input is valid
             })
     })
 
