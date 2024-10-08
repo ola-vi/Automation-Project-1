@@ -13,12 +13,8 @@ Cypress.Commands.add('softAssert', (selector, callback) => {
             const testName = Cypress.currentTest.title
 
             // Automatically describe what was being tested
-            const testedAttribute = soft_test_Attribute 
+            const testedAttribute = soft_test_Attribute
             const expectedConditions = soft_test_exp_Conditions.join(' and ')  // Combine multiple conditions for the error message
-            /*      const expectedConditions = [
-                    'should exist',
-                    'should not be empty'
-                  ].join(' and ')  // Combine multiple conditions for the error message   */
 
             // Display a pop-up on the screen with the error message
             cy.document().then((doc) => {
@@ -42,7 +38,6 @@ Cypress.Commands.add('softAssert', (selector, callback) => {
         }
     })
 })
-
 
 
 beforeEach(() => {
@@ -188,18 +183,19 @@ describe('Section 1: Visual tests', () => {
     })
 
     // 1.8
-    it('Check the e-mail format validation & errors', () => {
+    it('Check the email field at default state. (Label, field available, format validation & errors)', () => {
 
         //Verify there is email input field enabled and no errors displayed by default
         cy.get('input[name="email"]').should('exist').should('be.enabled')
+        cy.get('label[for="email"]').should('contain.text', 'Email')
         cy.get('span').contains('Email is required.').should('not.be.visible')
         cy.get('span').contains('Invalid email address.').should('not.be.visible')
         //cy.get('input[name="email"]').should('have.attr', 'placeholder').and('not.be.empty')    // In code there is no placeholder so it fails and ruins other tests. Should have placeholder as name field have it.
 
-        
+
         // Using CUSTOM "soft assert" to check for the placeholder attribute. If failing, error displayed in log, but test continues and is marked as passed.
         soft_test_Attribute = 'Placeholder'                                 // DEFINE TESTED ATTRIBUTE FOR SOFT ASSERT ERROR MESSAGE
-        soft_test_exp_Conditions = ['should exist','should not be empty']   // DEFINE TESTED CONDITIONS FOR SOFT ASSERT ERROR MESSAGE
+        soft_test_exp_Conditions = ['should exist', 'should not be empty']   // DEFINE TESTED CONDITIONS FOR SOFT ASSERT ERROR MESSAGE
 
         cy.log('EXPECT EMAIL TO HAVE PLACEHOLDER')
         cy.softAssert('input[name="email"]', (el) => {
@@ -211,15 +207,28 @@ describe('Section 1: Visual tests', () => {
 
         //Verify there are no error messages displayed when valid email entered
         cy.get('input[name="email"]').type('validemail@yeap.com')
+        cy.get('h1').contains('Registration page').click()                       //Page acts without click but just to be sure
         cy.get('span').contains('Email is required.').should('not.be.visible')
         cy.get('span').contains('Invalid email address.').should('not.be.visible')
 
         //Verify error messages for invalid and cleared email field
         cy.get('input[name="email"]').clear()
         cy.get('input[name="email"]').type('w#%@')
+        cy.get('h1').contains('Registration page').click()                       //Page acts without click but just to be sure
         cy.get('span').contains('Invalid email address.').should('be.visible')
         cy.get('input[name="email"]').clear()
         cy.get('span').contains('Email is required.').should('be.visible')
+    })
+
+    // 1.9
+    it('Check the Name field at default state. (Label, field available, validity)', () => {
+        cy.get('#name').should('exist').should('be.enabled')
+        cy.get('label[for="name"]').should('contain.text', 'Name')
+        cy.get('#name').then(($input) => {
+            expect($input[0].checkValidity()).to.be.false
+        })
+        cy.get('#name').should('have.attr', 'placeholder', 'Type your name')
+
     })
 
 })
